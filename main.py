@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import random
+import json
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' , '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','!', '#', '$', '%', '&', '(', ')', '*', '+']
 random.shuffle(letters)
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -18,6 +19,13 @@ def savePassword():
     website = website_entry.get()
     email = email_username_entry.get()
     password = password_entry.get()
+
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
     if website == "" or email == "" or password == "":
         messagebox.showwarning(title="Oops", message="Hey, you missed some of the blanks.")
         return
@@ -28,8 +36,21 @@ def savePassword():
                         f"\npassword: {password}"
                         f"\nAre you accept to save data?",title="Make sure your data.")
     if is_ok:
-        with open("data.txt", "a") as f:
-            f.write(f"{website} | {email} | {password} \n")
+        data = new_data
+        try:
+            with open("data.json", "r") as data_file:
+                #Read the data
+                data = json.load(data_file)
+                #Update the data
+                data.update(new_data)
+        except:
+            open("data.json", "w")
+
+
+        with open("data.json", "w") as data_file:
+            json.dump(data,data_file,indent=4)
+
+
             website_entry.delete(first=0,last=END)
             password_entry.delete(first=0,last=END)
 
